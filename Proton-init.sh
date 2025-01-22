@@ -21,13 +21,13 @@ tdnf install -y sudo nfs-utils tmux docker-compose git diffutils nc lsof
 hostnamectl set-hostname $host_name
 
 #Set DNS
-grep -q 'gvea.com' /etc/systemd/resolved.conf ||
+grep -q 'local' /etc/systemd/resolved.conf ||
 echo "[Resolve]
-DNS=10.254.254.13 10.254.254.14
+DNS=8.8.8.8 9.9.9.9
 DNSSEC=no
 DNSOverTLS=no
 LLMNR=no
-Domains=gvea.com gvea.local" > /etc/systemd/resolved.conf
+Domains=local" > /etc/systemd/resolved.conf
 systemctl restart systemd-resolved
 
 #Enable ICMP
@@ -75,8 +75,7 @@ fi
 mkdir -p /home/docker_$docker_env/.ssh
 if [ ! -f /home/docker_$docker_env/.ssh/authorized_keys ]
 then
-echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJjM92/BhuAzssMJ9nMJrccngepjZF7IAJ4GOecYjH7e mlk@gvea.com
-ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIImZcu5NmLq2WjSDDCPCPG4TpVBtQqekdyDadOCtmzrY mppeterson@gvea.com" > /home/docker_$docker_env/.ssh/authorized_keys
+echo "ssh keys" > /home/docker_$docker_env/.ssh/authorized_keys
 fi
 chmod 700 /home/docker_$docker_env/.ssh
 chmod 644 /home/docker_$docker_env/.ssh/authorized_keys
@@ -88,7 +87,7 @@ mkdir -p /docker_data/
 chown docker_$docker_env:docker_$docker_env /mnt/"$env_upper"_DockerNFS1
 chown docker_$docker_env:docker_$docker_env /docker_data
 grep -q 'gvea' /etc/fstab ||
-    printf "gvea-nfs1.gvea.local:/"$env_upper"_DockerNFS1 /mnt/"$env_upper"_DockerNFS1 nfs defaults 0 0" >> /etc/fstab
+    printf "servname.local:/"$env_upper"_DockerNFS1 /mnt/"$env_upper"_DockerNFS1 nfs defaults 0 0" >> /etc/fstab
 mount -a
 
 #Enable and start Docker
